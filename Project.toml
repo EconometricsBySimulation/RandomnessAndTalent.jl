@@ -1,0 +1,7 @@
+name = "RandomnessAndTalent"
+uuid = "4f23d9a2-1cfb-11ea-0a60-bf468a5834a4"
+authors = ["Francis C Smart <Fsmart@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
