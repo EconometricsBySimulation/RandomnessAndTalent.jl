@@ -59,9 +59,9 @@ function nextphase(dataframe, good = dataframe(x=-1, y=-1), bad = dataframe(x=-1
   t = maximum(dataframe.t)
   recentdata = dataframe[dataframe.t .== t, :]
   recentdata.t .+= 1
-  recentdata.good = 0
-  recentdata.realised = 0
-  recentdata.bad  = 0
+  recentdata.good .= 0
+  recentdata.realised .= 0
+  recentdata.bad .= 0
 
   #Loop through each individual and check if a good event happened
   for i in 1:size(recentdata, 1)
@@ -72,6 +72,8 @@ function nextphase(dataframe, good = dataframe(x=-1, y=-1), bad = dataframe(x=-1
         if rand(1,1)[1] < recentdata.talent[i]
             recentdata.capital[i] *= 2
             recentdata.realised[i] = 1
+            verbose && println("$i get fortuitous event")
+
         end
     end
 
@@ -87,7 +89,7 @@ function nextphase(dataframe, good = dataframe(x=-1, y=-1), bad = dataframe(x=-1
 end # module
 
 peopleset = DataFrame(i = 1:ni, t = 0, capital = initialcapital, talent = italent,
-  x = ix, y = iy, good=0, realised=1, bad=0)
+  x = ix, y = iy, good=0, realised=0, bad=0)
 
 for i in 1:timeperiods;
     global peopleset
@@ -109,5 +111,14 @@ plot(peopleset[[i in top for i in peopleset.i],:], x = "t", y = "capital", color
 peopleset[[i in top for i in peopleset.i] .& (peopleset.t .== 0), :talent]
 
 plot(peopleset[peopleset.t .== 80,:], x = "talent", y = "capital", Geom.point, Scale.y_log)
+
+eventcounts = by(peopleset, :i,
+  (:good, :bad, :realised) => x -> (good = sum(x[1]), bad = sum(x[2]), realised = sum(x[3])))
+
+peopleset[peopleset.good .== 1, :]
+
+mean(eventcounts.good)
+mean(eventcounts.bad)
+mean(eventcounts.realised)
 
 end #module
